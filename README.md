@@ -12,11 +12,10 @@ make a first attempt and then clean up later as an exercise.
 
 ### Running a solution
 
-CD into the solution directory and run cargo:
+Use the run-day script to run a solution:
 
 ```bash
-cd 2018/day01
-cargo run
+./run-day 1
 ```
 
 ## License
