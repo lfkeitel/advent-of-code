@@ -11,15 +11,10 @@ fn main() {
 }
 
 fn read_input(path: &Path) -> Vec<String> {
-    let file = File::open(path).unwrap();
-    let buf_reader = BufReader::new(file);
-    let mut input = Vec::new();
-
-    for line_res in buf_reader.lines() {
-        input.push(line_res.unwrap());
-    }
-
-    input
+    BufReader::new(File::open(path).unwrap())
+        .lines()
+        .map(|line_res| line_res.unwrap())
+        .collect()
 }
 
 fn part1(labels: &[String]) {
@@ -35,64 +30,62 @@ fn part1(labels: &[String]) {
         }
 
         // Find any letters with a count of exactly 2
-        for cnt in letters.values() {
-            if *cnt == 2 {
-                labels_with_two += 1;
-                break;
-            }
+        if letters.values().any(|&cnt| cnt == 2) {
+            labels_with_two += 1;
         }
 
         // Find any letters with a count of exactly 3
-        for cnt in letters.values() {
-            if *cnt == 3 {
-                labels_with_three += 1;
-                break;
-            }
+        if letters.values().any(|&cnt| cnt == 3) {
+            labels_with_three += 1;
         }
     }
 
-    println!("Part 1: Checksum: {}", labels_with_two * labels_with_three);
+    println!(
+        "Part 1: Checksum: {} (6474)",
+        labels_with_two * labels_with_three
+    );
 }
 
 fn part2(labels: &[String]) {
     for (i, label_a) in labels.iter().enumerate() {
         for label_b in labels.iter().skip(i + 1) {
             if labels_similar(label_a, label_b) {
-                println!("Part 2: Same Letters: {}", same_letters(label_a, label_b));
+                println!(
+                    "Part 2: Same Letters: {} (mxhwoglxgeauywfkztndcvjqr)",
+                    same_letters(label_a, label_b)
+                );
+                return;
             }
         }
     }
 }
 
 fn labels_similar(a: &str, b: &str) -> bool {
-    let a_bytes = a.as_bytes();
-    let b_bytes = b.as_bytes();
-
-    let mut diff = false;
-
-    for i in 0..a_bytes.len() {
-        if a_bytes[i] != b_bytes[i] {
-            if diff {
-                return false;
+    a.as_bytes().iter().zip(b.as_bytes()).fold(
+        0,
+        |acc, pair| {
+            if *pair.0 != *pair.1 {
+                acc + 1
             } else {
-                diff = true
+                acc
             }
-        }
-    }
-
-    diff
+        },
+    ) == 1
 }
 
 fn same_letters(a: &str, b: &str) -> String {
-    let a_bytes = a.as_bytes();
-    let b_bytes = b.as_bytes();
-    let mut same_bytes = Vec::with_capacity(a_bytes.len() - 1);
-
-    for i in 0..a_bytes.len() {
-        if a_bytes[i] == b_bytes[i] {
-            same_bytes.push(a_bytes[i]);
-        }
-    }
+    let same_bytes = a
+        .as_bytes()
+        .iter()
+        .zip(b.as_bytes())
+        .filter_map(|pair| {
+            if *pair.0 == *pair.1 {
+                Some(*pair.0)
+            } else {
+                None
+            }
+        })
+        .collect();
 
     String::from_utf8(same_bytes).unwrap()
 }
