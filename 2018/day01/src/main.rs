@@ -11,26 +11,22 @@ fn main() {
 }
 
 fn read_offsets(path: &Path) -> Vec<i32> {
-    let file = File::open(path).unwrap();
-    let buf_reader = BufReader::new(file);
+    let buf_reader = BufReader::new(File::open(path).unwrap());
     let mut offsets = Vec::new();
 
-    for line_res in buf_reader.lines() {
-        let offset: i32 = line_res.unwrap().parse().unwrap();
-        offsets.push(offset);
-    }
+    buf_reader.lines().for_each(|line_res| {
+        offsets.push(line_res.unwrap().parse::<i32>().unwrap());
+    });
 
     offsets
 }
 
 fn part1(offsets: &[i32]) {
-    let mut frequency = 0;
+    let frequency = offsets
+        .iter()
+        .fold(0, |acc: i32, offset: &i32| acc + offset);
 
-    for offset in offsets {
-        frequency += offset
-    }
-
-    println!("Part 1: Frequency: {}", frequency);
+    println!("Part 1: Frequency: {} (553)", frequency);
 }
 
 fn part2(offsets: &[i32]) {
@@ -44,7 +40,7 @@ fn part2(offsets: &[i32]) {
             frequency += offset;
 
             if freqs.contains_key(&frequency) {
-                println!("Part 2: Duplicate frequency: {}", frequency);
+                println!("Part 2: Duplicate frequency: {} (78724)", frequency);
                 return;
             }
 
