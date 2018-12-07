@@ -11,20 +11,14 @@ fn main() {
 }
 
 fn read_offsets(path: &Path) -> Vec<i32> {
-    let buf_reader = BufReader::new(File::open(path).unwrap());
-    let mut offsets = Vec::new();
-
-    buf_reader.lines().for_each(|line_res| {
-        offsets.push(line_res.unwrap().parse::<i32>().unwrap());
-    });
-
-    offsets
+    BufReader::new(File::open(path).unwrap())
+        .lines()
+        .map(|line_res| line_res.unwrap().parse::<i32>().unwrap())
+        .collect()
 }
 
 fn part1(offsets: &[i32]) {
-    let frequency = offsets
-        .iter()
-        .fold(0, |acc: i32, offset: &i32| acc + offset);
+    let frequency = offsets.iter().fold(0, |acc, offset| acc + offset);
 
     println!("Part 1: Frequency: {} (553)", frequency);
 }
